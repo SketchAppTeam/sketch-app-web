@@ -1,27 +1,38 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <div class="d-flex justify-content-start" id="main">
+        <SketchComponentTreeView :board-manager="boardManager" />
+        <SketchBoard :board-manager="boardManager" />
+    </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import HelloWorld from './components/HelloWorld.vue';
 
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+import SketchComponentTreeView from '@/sketch/app/ui/sketch-component-tree-view.vue';
+import { defineComponent } from '@vue/runtime-core';
+import SketchBoardManager from './sketch/app/core/sketch-board-manager';
+import SketchBoard from '@/sketch/app/ui/sketch-board.vue';
+
+export default defineComponent({
+    name: 'App',
+    components: {
+        SketchComponentTreeView,
+        SketchBoard
+    },
+    setup()
+    {
+        const boardManager: SketchBoardManager = new SketchBoardManager();
+
+        return { boardManager };
+    }
+});
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+html, #main
+{
+    height: 100%;
+    padding: 0;
+    margin: 0;
 }
 </style>
