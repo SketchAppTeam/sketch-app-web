@@ -30,4 +30,9 @@ export default abstract class SketchComponent<T>
      * @return The computed result of the component.
      */
     abstract execute(): T;
+
+    /**
+     * @return A copy of the component.
+     */
+    abstract copy(): SketchComponent<T>;
 }

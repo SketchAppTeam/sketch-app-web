@@ -35,4 +35,10 @@ html, #main
     padding: 0;
     margin: 0;
 }
+
+#main
+{
+    display: flex;
+}
+
 </style>

@@ -30,10 +30,20 @@ export class NumberInputComponent extends SketchComponent<number>
     {
         return 10;
     }
+
+    public copy(): SketchComponent<number>
+    {
+        const component: NumberInputComponent = new NumberInputComponent();
+        if (component.dataWrapper.isDataAvailable())
+        {
+            component.dataWrapper.setData(this.dataWrapper.getData() as number);
+        }
+        return component;    
+    }
 }
 
 export const configuration: ComponentConfiguration = {
     libraryName: 'Common/Input component',
     componentName: 'Number Input',
-    returnedType: Number
+    returnedType: Number,
 };

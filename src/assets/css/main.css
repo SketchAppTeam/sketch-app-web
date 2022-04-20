@@ -3,6 +3,11 @@
     background-color: yellow;
 }
 
+#app
+{
+    height: 100vh;
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */
@@ -12,3 +17,8 @@
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome and Opera */
   }
+
+.green-on-hover:hover
+{
+    color: green;
+}
