@@ -5,12 +5,14 @@ import { Class } from "./types";
 // import of the differents components / configurations
 
 import { NumberInputComponent, configuration as numberInputConfiguration } from "../natif-components/number-input-component";
+import { SequenceComponent, configuration as sequenceConfiguration } from "../natif-components/math/sequence-component";
 
 const configurations: Map<Class<SketchComponent<unknown>>, ComponentConfiguration> = new Map<Class<SketchComponent<unknown>>, ComponentConfiguration>();
 
 // register all components with their corresponding com
 
 configurations.set(NumberInputComponent, numberInputConfiguration);
+configurations.set(SequenceComponent, sequenceConfiguration);
 
 export function getConfigurationOf(componentClass: Class<SketchComponent<unknown>>)
 {

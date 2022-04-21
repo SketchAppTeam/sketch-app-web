@@ -3,6 +3,7 @@
         <b-modal
             v-model="$props.isOpen"
             @hidden="closePopup"
+            title="Number input component configuration"
         >
             <b-container fluid>
                 <b-row>

@@ -9,7 +9,8 @@ import { defineComponent } from "vue";
             :configuration="configuration"
             :componentX="componentWrapper.x"
             :componentY="componentWrapper.y"
-            @on-select="setSelectedComponent"
+            @on-select-component="setSelectedComponent"
+            @on-select-slot="selectSlot"
         />
     </div>
 </template>
@@ -24,6 +25,8 @@ import { getConfigurationOf } from "@/sketch/api/config-manager";
 
 import { defineComponent, reactive } from "vue";
 import ComponentConfiguration from "@/sketch/api/component-config";
+import { ComponentSlot } from "./type";
+import { ArrayStack, Stack } from "@/sketch/api/data-structure";
 
 const DELETE_KEY = "Delete";
 const COPY_KEY = "c";
@@ -56,11 +59,14 @@ export default defineComponent({
 
         let currentBoardPosition: { x: number, y: number } = { x: 0, y: 0 };
 
+        const slotStack: Stack<ComponentSlot> = new ArrayStack();
+
         return { componentsMap,
                  selectedComponent, 
                  copy, 
                  currentBoardPosition,
-                 componentCopy
+                 componentCopy,
+                 slotStack
         };
     },
     methods: {
@@ -135,6 +141,27 @@ export default defineComponent({
                         this.componentsMap.set(wrapper, config);
                     }
                 }
+            }
+        },
+        selectSlot(slot: ComponentSlot)
+        {  
+            if (this.slotStack.contains(slot))
+            {
+                this.slotStack.clear();
+                slot.isSelected = false;
+            }
+            else
+            {
+                this.slotStack.push(slot);
+                slot.isSelected = true;
+            }
+            
+            if (this.slotStack.size() == 2)
+            {
+                const inputSlot: ComponentSlot | undefined = this.slotStack.pop();
+                const outputSlot: ComponentSlot | undefined = this.slotStack.pop();
+
+                console.log(inputSlot, outputSlot);
             }
         },
 

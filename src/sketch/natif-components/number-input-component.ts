@@ -40,6 +40,10 @@ export class NumberInputComponent extends SketchComponent<number>
         }
         return component;    
     }
+
+    public onPayload(payload: never): void {
+        // do nothing
+    }
 }
 
 export const configuration: ComponentConfiguration = {

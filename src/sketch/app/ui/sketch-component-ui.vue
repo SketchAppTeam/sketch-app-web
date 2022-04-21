@@ -13,9 +13,17 @@
             @contextmenu.prevent="openConfigurePopup"
             @click="selectComponent"
         >
-            <div class="table border-0">
-                <div v-if="configuration.acceptedTypes" class="row-fluid">
-                    <div class="slot"><pre></pre></div>
+            <div class="table border-0">            
+                <div 
+                    v-if="configuration.acceptedTypes" 
+                    class="row-fluid" 
+                    @click="selectSlot(inputSlot)">
+                    <div 
+                        class="slot"
+                        :class="{ 'selected-slot': inputSlot.isSelected, 'unselected-slot': !inputSlot.isSelected}"
+                    >
+                        <pre></pre>
+                    </div>
                 </div>
                 <div class="row-fluid">
                     <span class="align-text-bottom noselect">{{ configuration.componentName }}</span>
@@ -23,8 +31,13 @@
                     <fa icon="play" @click="askForExecution" class="green-on-hover"/>
                 </div>
 
-                <div v-if="configuration.returnedType" class="row-fluid">
-                    <div class="slot"><pre></pre></div>
+                <div v-if="configuration.returnedType" class="row-fluid" @click="selectSlot(outputSlot)">
+                    <div
+                        class="slot"
+                        :class="{ 'selected-slot': outputSlot.isSelected, 'unselected-slot': !outputSlot.isSelected}"
+                    >
+                        <pre></pre>
+                    </div>
                 </div>
 
             </div>
@@ -46,8 +59,16 @@ import ComponentConfiguration from '@/sketch/api/component-config';
 import { getPopupByComponent } from '@/sketch/api/popup-manager';
 import SketchComponent from '@/sketch/api/sketch-component';
 import { Class } from '@/sketch/api/types';
-import { defineComponent, PropType, ref } from 'vue';
+import { defineComponent, PropType, Ref, ref } from 'vue';
 import Vue3DraggableResizable from 'vue3-draggable-resizable';
+import { ComponentSlot } from './type';
+
+type ComponentUIConfig = {
+    x: number;
+    y: number;
+    height: number;
+    width: number
+};
 
 export default defineComponent({
     name: 'SketchComponentUI',
@@ -56,17 +77,31 @@ export default defineComponent({
     },
     setup (props)
     {
-        const position = ref<object>({
+        const position = ref<ComponentUIConfig>({
             x: props.componentX,
             y: props.componentY,
-            height: 100,
-            width: 100
+            height: 120,
+            width: 120
         });
 
         let show = ref<boolean>(false);
         let showContextMenu = ref<boolean>(true);
         const popup = getPopupByComponent(props.component.constructor as Class<SketchComponent<unknown>>);
-        return { position, show, popup, showContextMenu };
+
+        // slots 
+        const inputSlot = ref({
+            targetComponent: props.component,
+            isSelected: false,
+            type: 'input'
+        });
+
+        const outputSlot = ref({
+            targetComponent: props.component,
+            isSelected: false,
+            type: 'output'
+        });
+
+        return { position, show, popup, showContextMenu, inputSlot, outputSlot };
     },  
     props: {
         component: {
@@ -101,7 +136,11 @@ export default defineComponent({
         },
         selectComponent()
         {
-            this.$emit('on-select', this.component);
+            this.$emit('on-select-component', this.component);
+        },
+        selectSlot(slot: ComponentSlot)
+        {
+            this.$emit('on-select-slot', slot);
         }
     }
 });
@@ -129,9 +168,13 @@ export default defineComponent({
     margin: 0 auto;
 }
 
-.slot
+.unselected-slot
 {
     background-color: black;
 }
 
+.slot:hover, .selected-slot
+{
+    background-color: red;
+}
 </style>
