@@ -12,6 +12,7 @@ import { defineComponent } from "vue";
             @on-select-component="setSelectedComponent"
             @on-select-slot="selectSlot"
             @on-drag="__updateArrows"
+            @on-ask-for-execute="askForExecute"
         />
     </div>
 </template>
@@ -254,6 +255,18 @@ export default defineComponent({
 
                 source.isSelected = false;
                 destination.isSelected = false;
+            }
+        },
+
+        askForExecute(component: SketchComponent<unknown>)
+        {
+            try
+            {
+                this.workflow.execute(component);
+            }
+            catch (e)
+            {
+                console.log(e);
             }
         },
 

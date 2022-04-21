@@ -136,7 +136,7 @@ export default defineComponent({
         },
         askForExecution()
         {
-            console.log("execute");
+            this.$emit('on-ask-for-execute', this.component)
         },
         selectComponent()
         {

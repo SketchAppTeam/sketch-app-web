@@ -1,5 +1,6 @@
 import ComponentConfiguration from '../api/component-config';
 import SketchComponent from '../api/sketch-component';
+import SketchExecutionException from '../api/sketch-execute-error';
 import SketchWrapper from '../api/sketch-wrapper';
 
 /**
@@ -28,7 +29,12 @@ export class NumberInputComponent extends SketchComponent<number>
 
     public execute(): number
     {
-        return 10;
+        if (!this.dataWrapper.isDataAvailable())
+        {
+            throw new SketchExecutionException("The value is not available");
+        }
+
+        return this.dataWrapper.getData() as number;
     }
 
     public copy(): SketchComponent<number>
