@@ -36,5 +36,5 @@ export default abstract class SketchComponent<T>
      */
     abstract copy(): SketchComponent<T>;
 
-    abstract onPayload(payload: never): void;
+    abstract onPayload(payload: unknown): void;
 }

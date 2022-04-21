@@ -28,6 +28,9 @@ import ComponentConfiguration from "@/sketch/api/component-config";
 import { ComponentSlot } from "./type";
 import { ArrayStack, Stack } from "@/sketch/api/data-structure";
 
+import { SketchBoardWorkflow } from '@/sketch/app/data/sketch-board-workflow';
+import DefaultSketchBoardWorkflow from '@/sketch/app/data/default-sketch-board-workflow';
+
 const DELETE_KEY = "Delete";
 const COPY_KEY = "c";
 const PASTE_KEY = "v";
@@ -60,13 +63,15 @@ export default defineComponent({
         let currentBoardPosition: { x: number, y: number } = { x: 0, y: 0 };
 
         const slotStack: Stack<ComponentSlot> = new ArrayStack();
+        const workflow: SketchBoardWorkflow = new DefaultSketchBoardWorkflow();
 
         return { componentsMap,
                  selectedComponent, 
                  copy, 
                  currentBoardPosition,
                  componentCopy,
-                 slotStack
+                 slotStack,
+                 workflow
         };
     },
     methods: {
