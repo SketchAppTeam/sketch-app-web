@@ -1,7 +1,15 @@
 .component-ui
 {
     background-color: yellow;
+    position: absolute;
 }
+
+.line {
+    height: 1px;
+    background-color: black;
+    position: absolute;
+}
+
 
 #app
 {

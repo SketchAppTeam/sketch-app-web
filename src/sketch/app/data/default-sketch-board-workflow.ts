@@ -73,7 +73,7 @@ export default class DefaultSketchBoardWorkflow implements SketchBoardWorkflow {
                 // the two nodes are existing
                 return false;
             }
-            
+
             const index: number = this.roots.indexOf(toNode as SketchWorkflowNode);
             this.roots.splice(index, 1);
             fromNode.getChildren().push(toNode as SketchWorkflowNode);
@@ -83,6 +83,7 @@ export default class DefaultSketchBoardWorkflow implements SketchBoardWorkflow {
         return true
 
     }
+
     deleteSketchComponent(component: sketchComponent<unknown>): void {
         const node: SketchWorkflowNode | undefined = this.findNodeAssociatedTo(component);
         if (node != undefined)
@@ -287,7 +288,7 @@ class SketchWorkflowNode {
        * @return <code>null</code> if none node contains the component, else the corresponding node.
        */
     findAssociatedNodeTo(component: SketchComponent<unknown>): SketchWorkflowNode | undefined {
-        if (this.component == component)
+        if (this.component.getID() == component.getID())
         {
             return this;
         }

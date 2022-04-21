@@ -12,6 +12,7 @@
             :resizable="true"
             @contextmenu.prevent="openConfigurePopup"
             @click="selectComponent"
+            @dragging="onDrag"
         >
             <div class="table border-0">            
                 <div 
@@ -21,6 +22,7 @@
                     <div 
                         class="slot"
                         :class="{ 'selected-slot': inputSlot.isSelected, 'unselected-slot': !inputSlot.isSelected}"
+                        ref="inputSlotUI"
                     >
                         <pre></pre>
                     </div>
@@ -35,13 +37,12 @@
                     <div
                         class="slot"
                         :class="{ 'selected-slot': outputSlot.isSelected, 'unselected-slot': !outputSlot.isSelected}"
+                        ref="outputSlotUI"
                     >
                         <pre></pre>
                     </div>
                 </div>
-
             </div>
-            
         </Vue3DraggableResizable>
         <component
             :is="popup"
@@ -59,7 +60,7 @@ import ComponentConfiguration from '@/sketch/api/component-config';
 import { getPopupByComponent } from '@/sketch/api/popup-manager';
 import SketchComponent from '@/sketch/api/sketch-component';
 import { Class } from '@/sketch/api/types';
-import { defineComponent, onMounted, PropType, Ref, ref } from 'vue';
+import { defineComponent, onMounted, PropType, ref } from 'vue';
 import Vue3DraggableResizable from 'vue3-draggable-resizable';
 import { ComponentSlot } from './type';
 
@@ -89,28 +90,22 @@ export default defineComponent({
         const popup = getPopupByComponent(props.component.constructor as Class<SketchComponent<unknown>>);
 
         // slots 
-        const inputSlot = ref({
-            targetComponent: props.component,
-            isSelected: false,
-            type: 'input',
-            targetUI: null
-        });
+        const inputSlot = ref<ComponentSlot>(new ComponentSlot(props.component, false, 'input'));
+        const outputSlot = ref<ComponentSlot>(new ComponentSlot(props.component, false, 'output'));
 
-        const outputSlot = ref({
-            targetComponent: props.component,
-            isSelected: false,
-            type: 'output',
-            targetUI: null
-        });
-
-        let ui = ref(null);
+        let ui = ref<HTMLElement>();
+        let inputSlotUI = ref<HTMLElement>();
+        let outputSlotUI = ref<HTMLElement>();
 
         onMounted(() => {
-            inputSlot.value.targetUI = ui.value; 
-            outputSlot.value.targetUI = ui.value;
+            inputSlot.value.targetUI = ui.value as HTMLElement 
+            outputSlot.value.targetUI = ui.value as HTMLElement;
+
+            inputSlot.value.slotUI = inputSlotUI.value as HTMLElement;
+            outputSlot.value.slotUI = outputSlotUI.value as HTMLElement;
         });
 
-        return { position, show, popup, showContextMenu, inputSlot, outputSlot, ui };
+        return { position, show, popup, showContextMenu, inputSlot, outputSlot, ui, inputSlotUI, outputSlotUI };
     },  
     props: {
         component: {
@@ -151,6 +146,10 @@ export default defineComponent({
         {
             this.$emit('on-select-slot', slot);
         },
+        onDrag()
+        {
+            this.$emit('on-drag');
+        }
     }
 });
 

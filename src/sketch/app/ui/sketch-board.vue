@@ -11,11 +11,14 @@ import { defineComponent } from "vue";
             :componentY="componentWrapper.y"
             @on-select-component="setSelectedComponent"
             @on-select-slot="selectSlot"
+            @on-drag="__updateArrows"
         />
     </div>
 </template>
 
 <script lang="ts">
+
+import LeaderLine from 'leader-line-new';
 
 import SketchComponent from "@/sketch/api/sketch-component";
 import { Class, Nullable } from "@/sketch/api/types";
@@ -23,7 +26,7 @@ import SketchBoardManager from "../core/sketch-board-manager";
 import SketchComponentUI from "@/sketch/app/ui/sketch-component-ui.vue";
 import { getConfigurationOf } from "@/sketch/api/config-manager";
 
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import ComponentConfiguration from "@/sketch/api/component-config";
 import { ComponentSlot } from "./type";
 import { ArrayStack, Stack } from "@/sketch/api/data-structure";
@@ -41,10 +44,17 @@ type ComponentWrapper = {
     y: number;
 };
 
+type Arrow = {
+    fromUI: HTMLElement;
+    toUI: HTMLElement;
+    from: SketchComponent<unknown>,
+    to: SketchComponent<unknown>
+}
+
 export default defineComponent({
     name: 'SketchBoard',
     components: {
-        SketchComponentUI
+        SketchComponentUI,
     },
     props: {
         boardManager: {
@@ -64,6 +74,9 @@ export default defineComponent({
 
         const slotStack: Stack<ComponentSlot> = new ArrayStack();
         const workflow: SketchBoardWorkflow = new DefaultSketchBoardWorkflow();
+        const arrows = ref<Arrow[]>([]);
+
+        const arrowsUI: Array<LeaderLine> = [];
 
         return { componentsMap,
                  selectedComponent, 
@@ -71,7 +84,9 @@ export default defineComponent({
                  currentBoardPosition,
                  componentCopy,
                  slotStack,
-                 workflow
+                 workflow,
+                 arrows,
+                 arrowsUI
         };
     },
     methods: {
@@ -109,6 +124,21 @@ export default defineComponent({
             this.currentBoardPosition.x = event.x;
             this.currentBoardPosition.y = event.y;
         },
+        __updateArrows()
+        {
+            // delete all arrows and recreate these
+            const elements = document.getElementsByClassName("leader-line");
+
+            for (const element of elements)
+            {
+                element.remove();
+            }   
+
+            this.arrows.forEach(arrow => new LeaderLine({
+                start: arrow.fromUI,
+                end: arrow.toUI
+            }));
+        },
         onKeyDown(event: KeyboardEvent)
         {
             const key: string = event.key;
@@ -120,6 +150,11 @@ export default defineComponent({
                     if (wrapper.component == this.selectedComponent)
                     {
                         this.componentsMap.delete(wrapper);
+                        // delete the arrows
+                        this.arrows = this.arrows.filter(arrow => arrow.from != wrapper.component && arrow.to != wrapper.component);
+                        // delete the component in the workflow
+                        this.workflow.deleteSketchComponent(wrapper.component);
+                        this.__updateArrows();
                     }
                 });
             }
@@ -197,6 +232,19 @@ export default defineComponent({
                             {
                                 // create the arrow
                                 console.log("Link created");
+                                const arrow: Arrow = {
+                                    fromUI: source.slotUI as HTMLElement,
+                                    toUI: destination.slotUI as HTMLElement,
+                                    from: source.targetComponent,
+                                    to: destination.targetComponent
+                                };
+
+                                this.arrows.push(arrow);
+
+                                new LeaderLine({
+                                    start: arrow.fromUI,
+                                    end: arrow.toUI,
+                                });
                             }
                         }
                         else
@@ -206,7 +254,7 @@ export default defineComponent({
                     }
                     else
                     {
-                            console.error("Cannot create a link between the two components.");
+                        console.error("Cannot create a link between the two components.");
                     }
                 }
 
@@ -217,6 +265,7 @@ export default defineComponent({
 
         setSelectedComponent(component: SketchComponent<unknown>)
         {
+            this.$forceUpdate();
             this.selectedComponent = component;
         }
     }
