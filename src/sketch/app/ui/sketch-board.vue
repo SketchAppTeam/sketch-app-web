@@ -95,6 +95,7 @@ export default defineComponent({
                     };
 
                     this.componentsMap.set(wrapper, associatedConfiguration);
+                    this.workflow.insert(component);
                 }            
             }
             else if (event.target == this.$refs['sketch-board'])
@@ -163,10 +164,54 @@ export default defineComponent({
             
             if (this.slotStack.size() == 2)
             {
-                const inputSlot: ComponentSlot | undefined = this.slotStack.pop();
-                const outputSlot: ComponentSlot | undefined = this.slotStack.pop();
+                const inputSlot: ComponentSlot = this.slotStack.pop() as ComponentSlot;
+                const outputSlot: ComponentSlot = this.slotStack.pop() as ComponentSlot;
+                this.__createLinkBetween(outputSlot, inputSlot);
+            }
+        },
+        __createLinkBetween(source: ComponentSlot, destination: ComponentSlot) {
+            // source : SequenceCompoennt
+            // destination : 
+            const sourceConfiguration: ComponentConfiguration | undefined = getConfigurationOf(source.targetComponent.constructor as Class<SketchComponent<unknown>>);
+            const destinationConfiguration: ComponentConfiguration | undefined = getConfigurationOf(destination.targetComponent.constructor as Class<SketchComponent<unknown>>);
+            
+            if (sourceConfiguration != undefined && destinationConfiguration != undefined)
+            {
+                // check the types of slots
+                if (source.type === 'input' || destination.type === 'output' || source.targetUI == destination.targetUI)
+                {
+                    console.error("The creation of link has failed");
+                }
+                else
+                {
+                    if (destinationConfiguration.acceptedTypes && sourceConfiguration.returnedType)
+                    {
+                        if (destinationConfiguration.acceptedTypes.includes(sourceConfiguration.returnedType))
+                        {
+                            // creation of the link between the two components
+                            if (!this.workflow.createLinkBetween(source.targetComponent, destination.targetComponent))
+                            {
+                                console.error("Error during the creation of link.");
+                            }
+                            else
+                            {
+                                // create the arrow
+                                console.log("Link created");
+                            }
+                        }
+                        else
+                        {
+                            console.error("Cannot create a link between the two components.");
+                        }
+                    }
+                    else
+                    {
+                            console.error("Cannot create a link between the two components.");
+                    }
+                }
 
-                console.log(inputSlot, outputSlot);
+                source.isSelected = false;
+                destination.isSelected = false;
             }
         },
 

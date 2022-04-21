@@ -4,4 +4,5 @@ export type ComponentSlot = {
     targetComponent: SketchComponent<unknown>;
     isSelected: boolean;
     type: 'output' | 'input';
+    targetUI: unknown;
 }

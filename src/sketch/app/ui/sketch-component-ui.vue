@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div ref="ui">
         <Vue3DraggableResizable class="component-ui text-center noselect border-0"
             :initW="position.width"
             :initH="position.height"
@@ -59,7 +59,7 @@ import ComponentConfiguration from '@/sketch/api/component-config';
 import { getPopupByComponent } from '@/sketch/api/popup-manager';
 import SketchComponent from '@/sketch/api/sketch-component';
 import { Class } from '@/sketch/api/types';
-import { defineComponent, PropType, Ref, ref } from 'vue';
+import { defineComponent, onMounted, PropType, Ref, ref } from 'vue';
 import Vue3DraggableResizable from 'vue3-draggable-resizable';
 import { ComponentSlot } from './type';
 
@@ -92,16 +92,25 @@ export default defineComponent({
         const inputSlot = ref({
             targetComponent: props.component,
             isSelected: false,
-            type: 'input'
+            type: 'input',
+            targetUI: null
         });
 
         const outputSlot = ref({
             targetComponent: props.component,
             isSelected: false,
-            type: 'output'
+            type: 'output',
+            targetUI: null
         });
 
-        return { position, show, popup, showContextMenu, inputSlot, outputSlot };
+        let ui = ref(null);
+
+        onMounted(() => {
+            inputSlot.value.targetUI = ui.value; 
+            outputSlot.value.targetUI = ui.value;
+        });
+
+        return { position, show, popup, showContextMenu, inputSlot, outputSlot, ui };
     },  
     props: {
         component: {
@@ -141,7 +150,7 @@ export default defineComponent({
         selectSlot(slot: ComponentSlot)
         {
             this.$emit('on-select-slot', slot);
-        }
+        },
     }
 });
 
