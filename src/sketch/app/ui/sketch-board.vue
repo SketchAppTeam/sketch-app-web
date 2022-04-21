@@ -76,8 +76,6 @@ export default defineComponent({
         const workflow: SketchBoardWorkflow = new DefaultSketchBoardWorkflow();
         const arrows = ref<Arrow[]>([]);
 
-        const arrowsUI: Array<LeaderLine> = [];
-
         return { componentsMap,
                  selectedComponent, 
                  copy, 
@@ -86,7 +84,6 @@ export default defineComponent({
                  slotStack,
                  workflow,
                  arrows,
-                 arrowsUI
         };
     },
     methods: {
@@ -134,10 +131,7 @@ export default defineComponent({
                 element.remove();
             }   
 
-            this.arrows.forEach(arrow => new LeaderLine({
-                start: arrow.fromUI,
-                end: arrow.toUI
-            }));
+            this.arrows.forEach(arrow => new LeaderLine(arrow.fromUI, arrow.toUI)); 
         },
         onKeyDown(event: KeyboardEvent)
         {
