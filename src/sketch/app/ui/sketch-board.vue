@@ -1,20 +1,23 @@
 import { defineComponent } from "vue";
 
 <template>
-    <div id="sketch-board" @mousemove="updateBoardPosition" @click="onBoardClick($event)" @keydown="onKeyDown($event)" tabindex="0" ref="sketch-board">
-        <SketchComponentUI
-            v-for="[componentWrapper, configuration] in componentsMap"
-            :key="componentWrapper.component.getID()"
-            :component="componentWrapper.component"
-            :configuration="configuration"
-            :componentX="componentWrapper.x"
-            :componentY="componentWrapper.y"
-            @on-select-component="setSelectedComponent"
-            @on-select-slot="selectSlot"
-            @on-drag="__updateArrows"
-            @on-ask-for-execute="askForExecute"
-        />
-    </div>
+        <div class="d-flex flex-column" id="wrapper">
+            <div id="sketch-board" @mousemove="updateBoardPosition" @click="onBoardClick($event)" @keydown="onKeyDown($event)" tabindex="0" ref="sketch-board">
+            <SketchComponentUI
+                v-for="[componentWrapper, configuration] in componentsMap"
+                :key="componentWrapper.component.getID()"
+                :component="componentWrapper.component"
+                :configuration="configuration"
+                :componentX="componentWrapper.x"
+                :componentY="componentWrapper.y"
+                @on-select-component="setSelectedComponent"
+                @on-select-slot="selectSlot"
+                @on-drag="__updateArrows"
+                @on-ask-for-execute="askForExecute"
+            />
+            </div>
+            <ConsoleComponent />
+        </div>
 </template>
 
 <script lang="ts">
@@ -34,6 +37,10 @@ import { ArrayStack, Stack } from "@/sketch/api/data-structure";
 
 import { SketchBoardWorkflow } from '@/sketch/app/data/sketch-board-workflow';
 import DefaultSketchBoardWorkflow from '@/sketch/app/data/default-sketch-board-workflow';
+
+import ConsoleComponent from './console-component.vue';
+
+import store from '@/store';
 
 const DELETE_KEY = "Delete";
 const COPY_KEY = "c";
@@ -56,6 +63,7 @@ export default defineComponent({
     name: 'SketchBoard',
     components: {
         SketchComponentUI,
+        ConsoleComponent
     },
     props: {
         boardManager: {
@@ -210,7 +218,10 @@ export default defineComponent({
                 // check the types of slots
                 if (source.type === 'input' || destination.type === 'output' || source.targetUI == destination.targetUI)
                 {
-                    console.error("The creation of link has failed");
+                    store.dispatch('addMessage', {
+                        message: "The creation of link has failed",
+                        type: 'error'
+                    });
                 }
                 else
                 {
@@ -283,9 +294,13 @@ export default defineComponent({
 <style>
     #sketch-board
     {
-        width: calc(100%/4*3);
-        height: 100%;
+        width: 100%;
+        height: 95%;
         background-color: gray;
+    }
+
+    #wrapper {
+        width: 100%;
     }
 
     #sketch-board:hover

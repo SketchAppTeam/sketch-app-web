@@ -31,7 +31,6 @@ export default defineComponent({
             type: Object as PropType<NumberInputComponent>
         }
     },
-
     setup()
     {
         let value = 0;

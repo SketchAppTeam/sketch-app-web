@@ -14,8 +14,8 @@ import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css';
 // FontAwesome setup
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
-library.add(faPlay);
+import { faPlay, faAngleUp, faAngleDown, faTriangleExclamation, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlay, faAngleDown, faAngleUp, faTriangleExclamation, faCircleExclamation);
 
 import '@/assets/css/main.css';
 
