@@ -1,5 +1,7 @@
 # sketch-app-web
 
+It is the web version of the sketch-app repository present on my Github.
+
 ## Project setup
 ```
 npm install
